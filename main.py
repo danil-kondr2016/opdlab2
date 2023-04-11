@@ -17,11 +17,18 @@ class GameState:
         self.question_tuple = None
         self.current_question = None
         self.questions = read_questions(question_file)
+        self.game_started = False
+        self.game_ended = False
+
+    def is_game_started(self):
+        return self.game_started
 
     def start_game(self):
         self.current_question = 0
         self.question_tuple = self.questions[self.current_question].create_question()
         self.correct_answer = self.question_tuple[5]
+        self.game_started = True
+        self.game_ended = False
 
     def next_question(self):
         self.current_question += 1
@@ -38,6 +45,8 @@ class GameState:
 
     def end_game(self):
         self.current_question = len(self.questions)
+        self.game_started = False
+        self.game_ended = True
 
 
 START_GAME = 'Начать'
@@ -100,6 +109,9 @@ async def incorrect_answer(message: types.Message, game_state: GameState):
 
 
 async def check_answer(message: types.Message, game_state: GameState, answer: int):
+    if not game_state.is_game_started():
+        return
+
     if game_state.check_answer(answer):
         await correct_answer(message, game_state)
     else:
