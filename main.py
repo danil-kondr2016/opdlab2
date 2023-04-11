@@ -33,6 +33,8 @@ class GameState:
     def next_question(self):
         self.current_question += 1
         if self.current_question >= len(self.questions):
+            self.game_started = False
+            self.game_ended = True
             return
         self.question_tuple = self.questions[self.current_question].create_question()
         self.correct_answer = self.question_tuple[5]
